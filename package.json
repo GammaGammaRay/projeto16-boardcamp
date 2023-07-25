@@ -2,9 +2,10 @@
   "name": "projeto16-boardcamp",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/app.js",
   "scripts": {
-    "test": "run"
+    "start": "node ./src/app.js",
+    "dev": "nodemon start"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
     "express": "^4.18.2",
     "joi": "^17.9.2",
     "nodemon": "^3.0.1",
+    "pg": "^8.11.1",
     "string-strip-html": "^13.4.2",
     "uuid": "^9.0.0"
   }
