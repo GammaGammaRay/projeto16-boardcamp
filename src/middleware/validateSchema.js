@@ -1,6 +1,4 @@
-import Joi from 'joi';
-
-export default function validate(schema) {
+export default function validateSchema(schema) {
   return (req, res, next) => {
     const { error } = schema.validate(req.body, { abortEarly: false });
 

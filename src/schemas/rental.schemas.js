@@ -1,9 +1,9 @@
-import Joi from "joi";
+import Joi from "joi"
 
-const schemaRental = Joi.object({
-  customerId: Joi.number().integer().required(),
-  gameId: Joi.number().integer().required(),
-  daysRented: Joi.number().integer().greater(0).required(),
-});
+const schemaRental = joi.object({
+  customerId: joi.number().integer().required(),
+  gameId: joi.number().integer().required(),
+  daysRented: joi.number().integer().required(),
+})
 
-export default schemaRental;
+export default schemaRental
