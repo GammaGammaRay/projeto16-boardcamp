@@ -11,13 +11,6 @@ async function getCustomers(req, res) {
     sqlQuery += `WHERE cpf LIKE $${sqlQueryParams.length} `
   }
 
-  if (order) {
-    sqlQuery += `ORDER BY customers."${order}" `
-    if (desc && desc.toLowerCase() === "true") {
-      sqlQuery += `DESC`
-    }
-  }
-
   if (offset) {
     sqlQueryParams.push(offset)
     sqlQuery += `OFFSET $${sqlQueryParams.length} `
@@ -26,6 +19,13 @@ async function getCustomers(req, res) {
   if (limit) {
     sqlQueryParams.push(limit)
     sqlQuery += `LIMIT $${sqlQueryParams.length} `
+  }
+
+  if (order) {
+    sqlQuery += `ORDER BY customers."${order}" `
+    if (desc && desc.toLowerCase() === "true") {
+      sqlQuery += `DESC`
+    }
   }
 
   try {
@@ -65,4 +65,43 @@ async function addCustomer(req, res) {
   }
 }
 
-export { getCustomers, addCustomer }
+async function getCustomerById(req, res) {
+  const { id } = req.params
+
+  try {
+    const customer = await db.query(`SELECT * FROM customers WHERE id=$1;`, [
+      id,
+    ])
+    if (!customer.rows[0]) return res.status(404).send("User does not exist")
+    customer.rows[0].birthday = dayjs(customer.rows[0].birthday).format(
+      "YYYY-MM-DD"
+    )
+    return res.send(customer.rows[0])
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+}
+
+async function updateCustomer(req, res) {
+  const { id } = req.params
+  const { name, phone, birthday, cpf } = req.body
+
+  try {
+    const customer = await db.query(`SELECT * FROM customers WHERE cpf=$1`, [
+      cpf,
+    ])
+    if (customer.rowCount > 0 && customer.rows[0].id !== Number(id))
+      return res.status(409).send("Cpf already in use")
+    await db.query(
+      `UPDATE customers
+      (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)
+                                       WHERE id = $5`,
+      [name, phone, cpf, birthday, id]
+    )
+    return res.sendStatus(200)
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+}
+
+export { getCustomers, addCustomer, getCustomerById, updateCustomer }
